@@ -1,0 +1,75 @@
+/* Home search form */
+.nav-item form input{
+    height: 40px;
+    border-width: 0.5px;
+    border-radius: 10px;
+    padding: 2px;
+}
+.nav-item form select{
+    height: 40px;
+    width: 150px;
+    border-width: 0.5px;
+    border-radius: 10px;
+}
+.search-button{
+    height: 40px;
+    border-radius: 10px;
+    border-width: 0.2px;
+    background-color: #0096c7;
+    color: #ffffff;
+}
+.search-button:hover{
+    transition-duration: 0.3s;
+    background-color: #ffffff;
+    color: black;
+}
+.reset-button{
+    height: 40px;
+    border-radius: 10px;
+    border-width: 0.2px;
+    background-color: grey;
+}
+.reset-button:hover{
+    background-color: white;
+}
+.button-disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Home dropdown */
+.drop {
+    position: relative;
+    display: inline-block;
+}
+.dropbtn{
+    border: none;
+    background-color: #ffff;
+    color: cornflowerblue;
+}
+.dropcontent{
+    display: none;
+    position: absolute;
+    min-width: 200px;
+    z-index: 1;
+}
+.dropcontent a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropcontent a:hover {background-color:#fafafa;}
+.drop:hover .dropcontent {display: block; background-color: #ffffff;}
+.drop:hover .dropbtn {background-color: white; color: black;}
+
+
+
+
+#cart-container{
+    max-height: 300px;
+    overflow-y: scroll;
+}
+.hidden {
+    display: none;
+}
