@@ -62,9 +62,13 @@ class InvoiceController extends BaseController
 
         $this->redirectIfNotLoggedIn(); 
 
+        $data = $_POST;
+
         $products = $_SESSION["cart"];
 
-        $price = getTotalPrice($_SESSION["cart"]);
+        $products = $this->getAmounts($products, $data);
+
+        $price = $this->getTotalPrice($products);
 
         $this->content = view("checkout", compact("products", "price"), $this->tplDir); 
     }
@@ -78,14 +82,14 @@ class InvoiceController extends BaseController
         $data = $_POST; 
         $data["products"] = json_decode($data["products"], true); 
 
-        $name = buyerName($data);
-        $fileName = createFileName($data);
+        $name = $this->buyerName($data);
+        $fileName = $this->createFileName($data);
 
-        $new = $this->invoice->save($name, $fileName);
+        $new = $this->invoice->save($name, $fileName, json_encode($data["products"]));
 
         if ($new){
             $data["invoice_number"] = $new;
-            $newFile = composeFile($data, $fileName, $name);
+            $newFile = $this->composeFile($data, $fileName, $name);
             if ($newFile["success"]){
                 $prod = new Product($this->conn);
                 if ($prod->decreaseProducts($data["products"])){
@@ -104,4 +108,140 @@ class InvoiceController extends BaseController
             sendResponse(False, "Something went wrong");
         }
     }
+
+    private function getAmounts(array &$products, array $amounts) :array 
+    {
+        foreach ($products as &$product) { 
+            foreach ($amounts as $key => $value) {
+                $productId = intval(substr($key, 6));
+                if ($productId === $product['id']) {
+                    $product['amount'] = (int) $value;
+                    break;
+                }
+            }
+        }
+
+        return $products;
+    }
+
+    private function getTotalPrice($items) :float 
+    {
+        $total = 0;
+
+        foreach($items as $item){
+            $total += $item["price"] * $item["amount"];
+        }
+
+        return $total; 
+    }
+
+    private function buyerName(array $data) :string 
+    {
+        if ($data["buyer"] === "person"){
+            $name = $data["first-name"] ." ". $data["last-name"];
+        } elseif ($data["buyer"] === "customer") {
+            $name = $data["name"]; 
+        }
+
+        return $name;
+    }
+
+    private function createFileName(array $data) :string
+    {
+        $name = $data["buyer"] === "person" ? $data["first-name"].$data["last-name"] : str_replace(" ", "", $data["name"]);
+        $filepath = "./invoices/$name.txt";
+        $i = 2;
+
+        while(file_exists($filepath)){
+            $filepath = "./invoices/{$name}_$i.txt";
+            $i++; 
+        }
+
+        return $filepath;
+    }
+
+    private function composeFile(array $data, string $filepath , string $name) 
+    {
+        $message = [
+            "success" => True, 
+            "message" => "File created"
+        ];
+
+        $handle = fopen($filepath, "w");
+
+        if ($handle){
+
+            // file header
+            $file_content = "INVOICE ";
+            $file_content .= "#".$data["invoice_number"]."\n \n";
+            $file_content .= "BUYER: $name, " . ($data['address'] !== '' ? $data["address"] : '') . ", " . ($data['nation'] !== '' ? $data["nation"] : '') . ", " . ($data['city'] !== '' ? $data["city"] : '') . ", " . ($data['zip'] !== '' ? $data["zip"] : '') . "\n";
+            if ($data["vat"] !== ""){
+                $file_content .= "VAT: {$data["vat"]}\n";
+            }
+            if (array_key_exists("phone", $data) || array_key_exists("email", $data)){
+                $file_content .= "CONTACT: ";
+                $file_content .= $data["phone"] !== "" ? $data["phone"]." " : "";
+                $file_content .= $data["email"] !== "" ? $data["email"]." " : "";
+                $file_content .= "\n\n";
+            }
+
+            // products 
+            $file_content .= "PRODUCTS \n \n";
+            foreach($data["products"] as $product){
+                $file_content .= "- ";
+                $file_content .= $product["name"].", ";
+                $file_content .= "€".$product["price"].", ";
+                $file_content .= "AMOUNT: ".$product["amount"];
+                $file_content .= "\n";
+            }
+            $file_content .= "\n";
+            $file_content .= "TOTAL PRICE:  €";
+            $file_content .= $data["price"]."\n\n";
+
+            // others
+            $file_content .= "PAYMENT METHOD: ";
+            $file_content .= $data["payment"]."\n\n";
+            
+            $file_content .= "NOTES: ";
+
+            if (array_key_exists("in_store", $data)){
+                $file_content .= "in-store pick up \n";
+            } elseif(array_key_exists("same_address", $data)){
+                $file_content .= "same address for shipping \n";
+            } else {
+                $file_content .= "SHIPPING ADDRESS: ";
+                $file_content .= $data["ship_address"].", ";
+                $file_content .= $data["ship_nation"].", ";
+                $file_content .= $data["ship_city"].", ";
+                $file_content .= $data["ship_zip"]." \n";
+                $file_content .= "SHIPPING NOTES: ".$data["shipping-notes"];
+            }
+
+            $file_content .= "\n\n";
+
+            $file_content .= "TODAY: ".date("d-m-Y");
+            
+            fwrite($handle, $file_content); 
+            fclose($handle); 
+
+            $message = [
+                "success" => True, 
+                "message" => "File created", 
+                "filename" => $filepath
+            ];
+
+            return $message; 
+
+        } else {
+            $message = [
+                "success" => False, 
+                "message" => "Unable to create file"
+            ]; 
+
+            return $message; 
+        }
+
+        return $message; 
+    }
+
 }

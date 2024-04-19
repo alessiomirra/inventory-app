@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Category;
 
 use PDO; 
+use Exception;
 
 class ProductController extends BaseController
 {
@@ -217,6 +218,10 @@ class ProductController extends BaseController
 
     public function saveFromFile() 
     {
+        /**
+        * Save products taken from CSV file in the database. API endpoint 
+        */
+
         $filesFolder = __DIR__ . "/files";
 
         if (isset($_FILES["document"]) && $_FILES["document"]["error"] === UPLOAD_ERR_OK){
@@ -388,10 +393,40 @@ class ProductController extends BaseController
 
     public function cleanCart() :void 
     {
+        /**
+        * Clean products in cart 
+        */
+
         $this->redirectIfNotLoggedIn();
 
         $_SESSION["cart"] = []; 
         
         redirect('/');
     }
+
+    public function searchFormSuggestions() :void  
+    {
+        /**
+        * Request from the search form 
+        * Returns a list of suggestions for the form
+        * Takes the string and the value of the "search by" field
+        */
+
+        if (isset($_GET["by"]) || isset($_GET["string"])){
+            $data = [
+                "by" => $_GET["by"], 
+                "string" => $_GET["string"]
+            ]; 
+            $suggests = $this->product->getByString($data);
+            if (count($suggests)){
+                sendResponse(True, "Finded", $suggests); 
+            } else {
+                sendResponse(True, "None"); 
+            }
+        } else {
+            sendResponse(False, "Error", "No Data");
+        }
+    }
+   
 }
+

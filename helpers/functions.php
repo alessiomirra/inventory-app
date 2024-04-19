@@ -1,5 +1,8 @@
 <?php 
 
+$configs = require "./config/app.config.php";
+
+
 function dd(...$data): void {
     var_dump($data);
     die;
@@ -12,6 +15,34 @@ function getConfig($param)
     $config = require "./config/app.config.php";
 
     return $config["configs"][$param] ? $config["configs"][$param] : null;
+}
+
+function sendAPIRequest($data, $path="/")
+{
+    /**
+    * This function handle the request to the Python API
+    * to handle our inventory data 
+    */
+
+    $url = $configs["api"]["localhost"].$configs["api"]["port"].$path;
+
+    $data["token"] = $configs["api"]["key"];
+    $payload = json_encode($data);
+
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+
+    $response = curl_exec($curl);
+
+    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+
+    curl_close($curl);
+
+    return $httpCode == 200;
 }
 
 function redirect(string $url = '/'): void {
@@ -84,125 +115,6 @@ function remainingColor(int $number) :string
     } 
 
     return "text-black"; 
-}
-
-function getTotalPrice(array $items) :float 
-{   
-    $total = 0;
-
-    foreach($items as $item){
-        $total += $item["price"];
-    }
-
-    return $total; 
-}
-
-function buyerName(array $data) :string 
-{
-    if ($data["buyer"] === "person"){
-        $name = $data["first-name"] ." ". $data["last-name"];
-    } elseif ($data["buyer"] === "customer") {
-        $name = $data["name"]; 
-    }
-
-    return $name;
-}
-
-function createFileName(array $data) :string
-{
-    $name = $data["buyer"] === "person" ? $data["first-name"].$data["last-name"] : str_replace(" ", "", $data["name"]);
-    $filepath = "./invoices/$name.txt";
-    $i = 2;
-
-    while(file_exists($filepath)){
-        $filepath = "./invoices/{$name}_$i.txt";
-        $i++; 
-    }
-
-    return $filepath;
-}
-
-function composeFile(array $data, string $filepath , string $name) 
-{
-    $message = [
-        "success" => True, 
-        "message" => "File created"
-    ];
-
-    $handle = fopen($filepath, "w");
-
-    if ($handle){
-
-        // file header
-        $file_content = "INVOICE ";
-        $file_content .= "#".$data["invoice_number"]."\n \n";
-        $file_content .= "BUYER: $name, " . ($data['address'] !== '' ? $data["address"] : '') . ", " . ($data['nation'] !== '' ? $data["nation"] : '') . ", " . ($data['city'] !== '' ? $data["city"] : '') . ", " . ($data['zip'] !== '' ? $data["zip"] : '') . "\n";
-        if ($data["vat"] !== ""){
-            $file_content .= "VAT: {$data["vat"]}\n";
-        }
-        if (array_key_exists("phone", $data) || array_key_exists("email", $data)){
-            $file_content .= "CONTACT: ";
-            $file_content .= $data["phone"] !== "" ? $data["phone"]." " : "";
-            $file_content .= $data["email"] !== "" ? $data["email"]." " : "";
-            $file_content .= "\n\n";
-        }
-
-        // products 
-        $file_content .= "PRODUCTS \n \n";
-        foreach($data["products"] as $product){
-            $file_content .= "- ";
-            $file_content .= $product["name"].", ";
-            $file_content .= "€".$product["price"];
-            $file_content .= "\n";
-        }
-        $file_content .= "\n";
-        $file_content .= "TOTAL PRICE:  €";
-        $file_content .= $data["price"]."\n\n";
-
-        // others
-        $file_content .= "PAYMENT METHOD: ";
-        $file_content .= $data["payment"]."\n\n";
-        
-        $file_content .= "NOTES: ";
-
-        if (array_key_exists("in_store", $data)){
-            $file_content .= "in-store pick up \n";
-        } elseif(array_key_exists("same_address", $data)){
-            $file_content .= "same address for shipping \n";
-        } else {
-            $file_content .= "SHIPPING ADDRESS: ";
-            $file_content .= $data["ship_address"].", ";
-            $file_content .= $data["ship_nation"].", ";
-            $file_content .= $data["ship_city"].", ";
-            $file_content .= $data["ship_zip"]." \n";
-            $file_content .= "SHIPPING NOTES: ".$data["shipping-notes"];
-        }
-
-        $file_content .= "\n\n";
-
-        $file_content .= "TODAY: ".date("d-m-Y");
-        
-        fwrite($handle, $file_content); 
-        fclose($handle); 
-
-        $message = [
-            "success" => True, 
-            "message" => "File created", 
-            "filename" => $filepath
-        ];
-
-        return $message; 
-
-    } else {
-        $message = [
-            "success" => False, 
-            "message" => "Unable to create file"
-        ]; 
-
-        return $message; 
-    }
-
-    return $message; 
 }
 
 function getStatus(string $search) :string 

@@ -273,12 +273,13 @@ class Product
         /*
         * Taken a sold products list, decrease, for each of them, the number in the database
         */
+
         $ret = True;
 
         foreach($products as $product){
             $item = $this->get($product["id"]);
             if ($item["number"] > 1){
-                $number = $item["number"] - 1;
+                $number = $item["number"] - $product["amount"];
                 $res = $this->decreaseNumber($product["id"], $number);
                 if (!$res){
                    $ret = False; 
@@ -294,4 +295,48 @@ class Product
         return $ret;
     }
 
+    public function getByString(array $data) :array 
+    {
+        /*
+        * query for search form suggestions
+        * get on the base of "search by" and string entered in 
+        * input field
+        */
+
+        $ret = [];
+
+        $by = $data["by"];
+        $string = "%".$data["string"]."%";
+
+        $sql = "SELECT * FROM product WHERE $by LIKE :string";
+
+        $stm = $this->conn->prepare($sql);
+        $stm->bindParam(':string', $string, PDO::PARAM_STR);
+        $stm->execute();
+
+        if ($stm->rowCount()) {
+            $results = $stm->fetchAll(PDO::FETCH_OBJ);
+
+            switch ($by) {
+                case 'brand': 
+                    foreach($results as $result){
+                        if (!in_array($result->brand, $ret)){
+                            $ret[] = $result->brand;
+                        };
+                    }; 
+                    break;
+                default:
+                    foreach($results as $result){
+                        if (!in_array($result->name, $ret)){
+                            $ret[] = $result->name;
+                        };
+                    }; 
+                    break;
+            };
+
+            return $ret;
+        } 
+
+        return $ret; 
+    }
 }

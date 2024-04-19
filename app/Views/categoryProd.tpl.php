@@ -44,7 +44,7 @@
             <nav aria-label="Page navigation">
                 <ul class="pagination">
                     <li class="page-item <?= $prevDisabled ?>">
-                        <a class="page-link" href="?page=<?= $page - 1 ?>&order-by=<?=$orderBy?>&order-dir=<?=$orderDir?>">Previous</a>
+                        <a class="page-link" href="?page=<?= $page - 1 ?>&order-by=<?=$orderBy?>&order-dir=<?=$orderDir?>"><i class="bi bi-caret-left"></i></a>
                     </li>
                     <?php for ($i=1; $i <= $totalPages; $i++): ?>
                         <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
@@ -52,7 +52,7 @@
                         </li>
                     <?php endfor; ?>
                     <li class="page-item <?= $nextDisabled ?>">
-                        <a class="page-link" href="?page=<?= $page + 1 ?>&order-by=<?=$orderBy?>&order-dir=<?=$orderDir?>">Next</a>
+                        <a class="page-link" href="?page=<?= $page + 1 ?>&order-by=<?=$orderBy?>&order-dir=<?=$orderDir?>"><i class="bi bi-caret-right"></i></a>
                     </li>
                 </ul>
             </nav>

@@ -29,7 +29,7 @@
                 <input type="hidden" name="order-by" value="<?= $orderBy ?>">
                 <input type="hidden" name="order-dir" value="<?= $orderDir ?>">
                 <input type="text" name="search" id="search" placeholder="Search Customer" required value="<?= getParam('search') ? getParam('search') : "" ?>">
-                <button type="submit" class="search-button" id="search-button">SEARCH</button>
+                <button type="submit" class="search-button px-3" id="search-button"><i class="bi bi-search"></i></button>
             </form>
         </li>
     </ul>
@@ -50,7 +50,7 @@
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li class="page-item <?= $prevDisabled ?>">
-                    <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?=$search?>&order-by=<?=$orderBy?>&order-dir=<?=$orderDir?>">Previous</a>
+                    <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?=$search?>&order-by=<?=$orderBy?>&order-dir=<?=$orderDir?>"><i class="bi bi-caret-left"></i></a>
                 </li>
                     <?php for ($i=1; $i <= $totalPages; $i++): ?>
                         <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
@@ -58,33 +58,52 @@
                         </li>
                     <?php endfor; ?>
                     <li class="page-item <?= $nextDisabled ?>">
-                        <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?=$search?>&order-by=<?=$orderBy?>&order-dir=<?=$orderDir?>">Next</a>
+                        <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?=$search?>&order-by=<?=$orderBy?>&order-dir=<?=$orderDir?>"><i class="bi bi-caret-right"></i></a>
                     </li>
             </ul>
         </nav>
     <?php endif;?>
     <!-- Pagination -->
 
-    <table class="table table-sm mt-3">
-        <caption>Invoices List</caption>
-        <thead>
-            <tr>
-                <th scope="col" style="width: 15%;">NUMBER</th>
-                <th scope="col">CUSTOMER</th>
-                <th scope="col">DATE</th>
-                <th scope="col">FILE</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($invoices as $invoice): ?>
-                <tr>
-                    <td><?= $invoice->id ?></td>
-                    <td><?= $invoice->customer ?></td>
-                    <td><?= $invoice->date ?></td>
-                    <td><a href="./invoices/<?= basename($invoice->file) ?>" download><?= basename($invoice->file) ?></a></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+    <!-- Invoices List  -->
+    <div class="list-group">
+        <?php foreach ($invoices as $invoice): 
+            $products = json_decode($invoice->products);
+            $total = 0
+        ?>
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">#<?= $invoice->id ?> <?= $invoice->customer ?></h5>
+                    <small class="text-body-secondary"><?= $invoice->date ?></small>
+                </div>
+                <ol class="list-group mt-2 mb-2">
+                        <li class="list-group-item">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width:70%;">NAME</th>
+                                        <th scope="col">PRICE</th>
+                                        <th scope="col">AMOUNT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach($products as $product): 
+                                    $total += $product->price * $product->amount;      
+                                ?>
+                                    <tr>
+                                        <td><?= $product->name ?>, <?= $product->code ?></td>
+                                        <td>€ <?= $product->price * $product->amount ?></td>
+                                        <td><?= $product->amount ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                                <caption>TOTAL: € <?= $total ?></caption>
+                            </table>
+                        </li>
+                </ol>
+                <small class="text-body-secondary">FILE: <a href="./invoices/<?= basename($invoice->file) ?>" download><?= basename($invoice->file) ?></a></small>
+            </div>
+        <?php endforeach; ?>
+    </div>
 
 </div>

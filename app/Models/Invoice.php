@@ -60,7 +60,7 @@ class Invoice
         return $result;
     }
 
-    public function save(string $name, string $file) :int  
+    public function save(string $name, string $file, $products) :int  
     {
         /**
         * Create a new Invoice 
@@ -72,15 +72,16 @@ class Invoice
         
         $ret = False;
         
-        $sql = "INSERT INTO invoice (date, customer, file) VALUES ";
-        $sql .= "(NOW(), :customer, :file)";
+        $sql = "INSERT INTO invoice (date, customer, file, products) VALUES ";
+        $sql .= "(NOW(), :customer, :file, :products)";
 
         $stm = $this->conn->prepare($sql); 
 
         if ($stm){
             $res = $stm->execute([
                 'customer' => $name, 
-                'file' => $file, 
+                'file' => $file,
+                'products' => $products  
             ]);
 
             if ($res){

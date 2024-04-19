@@ -37,6 +37,8 @@
     cursor: not-allowed;
 }
 
+
+
 /* Home dropdown */
 .drop {
     position: relative;
@@ -65,11 +67,14 @@
 
 
 
-
 #cart-container{
     max-height: 300px;
     overflow-y: scroll;
 }
 .hidden {
     display: none;
+}
+
+.amount-field{
+    width: 100px;
 }

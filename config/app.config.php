@@ -20,7 +20,7 @@ return [
             "login" => [LoginController::class, 'showLogin'],
             "categories" => [ProductController::class, "getCategories"],
             "invoices" => [InvoiceController::class, 'invoices'],
-            "checkout" => [InvoiceController::class, 'checkout'],
+            "suggestions" => [ProductController::class, "searchFormSuggestions"],
         ], 
         "POST" => [
             "login" => [LoginController::class, 'login'], 
@@ -31,11 +31,20 @@ return [
             ":id/delete" => [ProductController::class, 'deleteProduct'],
             "new-category" => [ProductController::class, 'addCategory'], 
             "remove-category" => [ProductController::class, 'deleteCategory'], 
-            "invoice" => [InvoiceController::class, "createInvoice"]
+            "checkout" => [InvoiceController::class, 'checkout'],
+            "invoice" => [InvoiceController::class, "createInvoice"], 
+            "add-to-selected" => [ProductController::class, "select"], 
+            "remove-from-selected" => [ProductController::class, "deselect"], 
+            "delete-selected" => [ProductController::class, "deleteSelected"]
         ]
     ], 
     "configs" => [
         "recordsPerPage" => 10, 
         "searchProductBy" => ["name", "brand", "status", "code", "price up to"], 
+    ], 
+    "api" => [
+        "key" => "3Rv7Tb1KwXn9sP5y6Aq0", 
+        "localhost" => "http://127.0.0.1:",
+        "port" => "5000"
     ]
 ];

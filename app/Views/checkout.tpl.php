@@ -18,13 +18,14 @@
 
                     <ol class="list-group list-group-numbered">
                         <?php foreach($products as $product): ?>
-                        <li class="list-group-item d-flex justify-content-between align-items-start">
-                            <div class="ms-2 me-auto">
-                                <div class="fw-bold"><?= $product["name"] ?></div>
-                                <?= $product["brand"] ?>
-                            </div>
-                            <span class="badge text-bg-primary rounded-pill">€ <?= $product["price"] ?></span>
-                        </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold"><?= $product["name"] ?></div>
+                                    <?= $product["brand"] ?>
+                                    <p class="text-muted">AMOUNT: <?= $product["amount"] ?></p>
+                                </div>
+                                <span class="badge text-bg-primary rounded-pill">€ <?= $product["price"] ?></span>
+                            </li>
                         <?php endforeach; ?>
                     </ol>
 
@@ -42,7 +43,7 @@
 
                 <form action="#" method="POST" id="checkout-form">
                     <!-- Products & Total price hidden fields -->
-                    <input type="hidden" id="products" name="products" value="<?= htmlspecialchars(json_encode($_SESSION["cart"]),  ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" id="products" name="products" value="<?= htmlspecialchars(json_encode($products),  ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="price" value="<?= $price ?>">
 
                     <p class="fw-bold">CUSTOMER DETAILS</p>
@@ -274,6 +275,35 @@
     </div>
   </div>
 </div>
+
+<script>
+
+    let products = <?php echo json_encode($products);?> ;
+    
+    /*
+
+    document.querySelector("#checkout-form").addEventListener("submit", function(e){
+
+        let xhr = new XMLHttpRequest();
+
+        xhr.open("POST", "http://127.0.0.1:5000/get", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onreadystatechange = function(){
+            if (xhr.readyState === 4 && xhr.status === 200){
+                console.log(xhr.response);
+            } else {
+                console.log("Error");
+            }
+        };
+
+        xhr.send(products);
+
+    });
+
+    */
+
+</script>
 
 <!-- Checkout page js -->
 <script src="/js/checkout.js"></script>

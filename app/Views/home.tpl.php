@@ -64,13 +64,17 @@
                         <option value="<?= $searchby ?>" <?= getParam('search-by') === $searchby ? "selected" : "" ?> ><?= strtoupper($searchby) ?></option>
                     <?php endforeach; ?>
                 </select>
-                <input type="text" name="search" id="search" placeholder="Search" required value="<?= getParam('search') ? getParam('search') : "" ?>">
+                <input type="text" name="search" id="search" placeholder="Search" list="suggestionsList" autocomplete="off" required value="<?= getParam('search') ? getParam('search') : "" ?>">
                 <datalist id="statusList">
                     <option value="IN STOCK"></option>
                     <option value="OUT OF STOCK"></option>
                     <option value="ARRIVING"></option>
                 </datalist>
-                <button type="submit" class="search-button" id="search-button">SEARCH</button>
+                <!---->
+                <datalist id="suggestionsList">
+                </datalist>
+                <!---->
+                <button type="submit" class="search-button px-3" id="search-button"><i class="bi bi-search"></i></button>
             </form>
         </li>
     </ul>
@@ -91,7 +95,10 @@
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li class="page-item <?= $prevDisabled ?>">
-                    <a class="page-link" href="?page=<?= $page - 1 ?>&<?= $url ?>">Previous</a>
+                    <a class="page-link" href="?page=1&<?= $url ?>">FIRST</a>
+                </li>
+                <li class="page-item <?= $prevDisabled ?>">
+                    <a class="page-link" href="?page=<?= $page - 1 ?>&<?= $url ?>"><i class="bi bi-caret-left"></i></a>
                 </li>
                 <?php for ($i=1; $i <= $totalPages; $i++): ?>
                     <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
@@ -99,7 +106,10 @@
                     </li>
                 <?php endfor; ?>
                 <li class="page-item <?= $nextDisabled ?>">
-                    <a class="page-link" href="?page=<?= $page + 1 ?>&<?= $url ?>">Next</a>
+                    <a class="page-link" href="?page=<?= $page + 1 ?>&<?= $url ?>"><i class="bi bi-caret-right"></i></a>
+                </li>
+                <li class="page-item <?= $nextDisabled ?>">
+                    <a class="page-link" href="?page=<?= $totalPages ?>&<?= $url ?>">LAST</a>
                 </li>
             </ul>
         </nav>
@@ -122,7 +132,7 @@
         </thead>
         <tbody>
             <?php foreach($products as $product): ?>
-                <tr>
+                <tr id="line" >
                     <td><a href="/<?= $product->id ?>"><?= $product->name ?></a></td>
                     <td><?= $product->brand ?></td>
                     <td>€ <?= $product->price ?></td>
@@ -144,3 +154,4 @@
 
 <!-- Script JS -->
 <script src="/js/home.js"></script>
+<script src="/js/search.js"></script>
