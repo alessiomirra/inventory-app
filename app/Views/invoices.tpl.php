@@ -67,43 +67,51 @@
 
     <!-- Invoices List  -->
     <div class="list-group">
-        <?php foreach ($invoices as $invoice): 
-            $products = json_decode($invoice->products);
-            $total = 0
-        ?>
-            <div class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">#<?= $invoice->id ?> <?= $invoice->customer ?></h5>
-                    <small class="text-body-secondary"><?= $invoice->date ?></small>
+        <?php if(count($invoices)): ?>
+            <?php foreach ($invoices as $invoice): 
+                $products = json_decode($invoice->products);
+                $total = 0
+            ?>
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">#<?= $invoice->id ?> <?= $invoice->customer ?></h5>
+                        <small class="text-body-secondary"><?= $invoice->date ?></small>
+                    </div>
+                    <ol class="list-group mt-2 mb-2">
+                            <li class="list-group-item">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="width:70%;">NAME</th>
+                                            <th scope="col">PRICE</th>
+                                            <th scope="col">AMOUNT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach($products as $product): 
+                                        $total += $product->price * $product->amount;      
+                                    ?>
+                                        <tr>
+                                            <td><?= $product->name ?>, <?= $product->code ?></td>
+                                            <td>€ <?= $product->price * $product->amount ?></td>
+                                            <td><?= $product->amount ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    </tbody>
+                                    <caption>TOTAL: € <?= $total ?></caption>
+                                </table>
+                            </li>
+                    </ol>
+                    <small class="text-body-secondary">FILE: <a href="./invoices/<?= basename($invoice->file) ?>" download><?= basename($invoice->file) ?></a></small>
                 </div>
-                <ol class="list-group mt-2 mb-2">
-                        <li class="list-group-item">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" style="width:70%;">NAME</th>
-                                        <th scope="col">PRICE</th>
-                                        <th scope="col">AMOUNT</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach($products as $product): 
-                                    $total += $product->price * $product->amount;      
-                                ?>
-                                    <tr>
-                                        <td><?= $product->name ?>, <?= $product->code ?></td>
-                                        <td>€ <?= $product->price * $product->amount ?></td>
-                                        <td><?= $product->amount ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                                <caption>TOTAL: € <?= $total ?></caption>
-                            </table>
-                        </li>
-                </ol>
-                <small class="text-body-secondary">FILE: <a href="./invoices/<?= basename($invoice->file) ?>" download><?= basename($invoice->file) ?></a></small>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="list-group-item list-group-item-action">
+                <div class="text-center">
+                    <p>NO INVOICES</p>
+                </div>
             </div>
-        <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 
 </div>
