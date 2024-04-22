@@ -427,6 +427,23 @@ class ProductController extends BaseController
             sendResponse(False, "Error", "No Data");
         }
     }
+
+    public function deleteSelected() :void 
+    {
+        /**
+        * Delete selected items 
+        * Handle an AJAX request 
+        */
+
+        $data = $_POST["selected"];
+        $selected = json_decode($data, true);
+        
+
+        foreach($selected as $sel){
+            $id = (int) $sel;
+            $this->product->delete($id);
+        };
+    }
    
 }
 

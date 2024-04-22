@@ -54,6 +54,7 @@
             </nav>
         </li>
         <li class="nav-item ms-auto mt-1">
+            <!-- Search Form --> 
             <form action="/" method="GET" id="search-form">
                 <input type="hidden" name="page" value="1">
                 <input type="hidden" name="order-by" value="<?= $orderBy ?>">
@@ -116,10 +117,23 @@
     <?php endif;?>
     <!-- Pagination -->
 
+    <!-- SELECTED ACTIONS -->
+    <div class="mt-2 mb-3 hidden" id="action-box">
+        <button class="btn btn-sm btn-danger" id="delete-selected-button">DELETE SELECTED</button>
+    </div>
+    <div class="alert alert-danger text-center hidden" id="no-items-error">
+        No selected Items
+    </div>
+    <div class="alert alert-danger text-center hidden" id="request-error">
+        Something went wrong in the request. Try later. 
+    </div>
+    <!---->
+
     <table class="table table-sm">
         <caption><?= $search !== null ? count($products)." "."Products" : "Products List" ?></caption>
         <thead>
             <tr>
+                <th></th>
                 <th scope="col" style="width: 25%;">NAME</th>
                 <th scope="col">BRAND</th>
                 <th scope="col">PRICE</th>
@@ -133,6 +147,7 @@
         <tbody>
             <?php foreach($products as $product): ?>
                 <tr id="line" >
+                    <td><input type="checkbox" name="selected" id="selected"></td>
                     <td><a href="/<?= $product->id ?>"><?= $product->name ?></a></td>
                     <td><?= $product->brand ?></td>
                     <td>€ <?= $product->price ?></td>
@@ -155,3 +170,4 @@
 <!-- Script JS -->
 <script src="/js/home.js"></script>
 <script src="/js/search.js"></script>
+<script src="/js/select.js"></script>

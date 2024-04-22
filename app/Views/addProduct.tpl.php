@@ -124,7 +124,7 @@
 
         <div class="input-group mb-3">
             <label class="input-group-text" for="category">CATEGORY</label>
-            <input name="category" class="form-control" id="category" list="categories" required>
+            <input name="category" class="form-control" id="category" list="categories" autocomplete="off" required>
             <datalist id="categories">
                 <?php if (count($categories)): ?>
                     <?php foreach($categories as $category): ?>

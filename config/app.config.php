@@ -33,8 +33,6 @@ return [
             "remove-category" => [ProductController::class, 'deleteCategory'], 
             "checkout" => [InvoiceController::class, 'checkout'],
             "invoice" => [InvoiceController::class, "createInvoice"], 
-            "add-to-selected" => [ProductController::class, "select"], 
-            "remove-from-selected" => [ProductController::class, "deselect"], 
             "delete-selected" => [ProductController::class, "deleteSelected"]
         ]
     ], 

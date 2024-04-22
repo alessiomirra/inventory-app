@@ -66,7 +66,7 @@
     <!-- Pagination -->
 
     <!-- Invoices List  -->
-    <div class="list-group">
+    <div class="list-group mb-5">
         <?php if(count($invoices)): ?>
             <?php foreach ($invoices as $invoice): 
                 $products = json_decode($invoice->products);

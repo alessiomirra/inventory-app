@@ -1,3 +1,7 @@
+<?php
+    $data = json_encode($products);
+?>
+
 <div class="container">
 
     <p class="mt-3 mb-3 d-flex justify-content-between">
@@ -276,34 +280,10 @@
   </div>
 </div>
 
-<script>
-
-    let products = <?php echo json_encode($products);?> ;
-    
-    /*
-
-    document.querySelector("#checkout-form").addEventListener("submit", function(e){
-
-        let xhr = new XMLHttpRequest();
-
-        xhr.open("POST", "http://127.0.0.1:5000/get", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-
-        xhr.onreadystatechange = function(){
-            if (xhr.readyState === 4 && xhr.status === 200){
-                console.log(xhr.response);
-            } else {
-                console.log("Error");
-            }
-        };
-
-        xhr.send(products);
-
-    });
-
-    */
-
+<!-- Checkout page js -->
+<script type="text/javascript">
+    let products = <?php echo $data; ?>;
 </script>
 
-<!-- Checkout page js -->
+<script src="/js/APIrequest.js"></script>
 <script src="/js/checkout.js"></script>
